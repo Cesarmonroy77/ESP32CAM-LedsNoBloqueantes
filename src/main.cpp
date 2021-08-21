@@ -23,6 +23,7 @@
 //*********** LIBRERIAS ****************
 //**************************************
 #include <Arduino.h> //Libreria para que platfomio trabaje con Arduino
+#include <stdio.h> //Libreria para usar la entrada y salida estandar
 #include <WiFi.h>  //Libreria para manejar el WiFi del ESP32CAM
 #include <PubSubClient.h> //Libreria para manejar MQTT
 
@@ -38,16 +39,16 @@
 //**************************************
 //*********** WIFI CONFIG **************
 //**************************************
-#define ssid "************"  // Poner el nombre de la red a la que se desea conectar
-#define password "********"  // Escribir la contraseña de la red
+#define ssid "***********"  // Poner el nombre de la red a la que se desea conectar
+#define password "**********"  // Escribir la contraseña de la red
 
 //**************************************
 //*********** MQTT CONFIG **************
 //**************************************
-#define mqtt_servidor "**********"  //Poner la IP del broker al que se quiere conectar
+#define mqtt_servidor "***********"  //Poner la IP del broker al que se quiere conectar
 #define mqtt_puerto 1883 //Puerto al que conectarse
-#define clientId "******" //Poner el id de cliente que se quiere para conectarse al broker
-#define topic "ESP32CAM/Data" //Tema a suscribirse
+#define clientId "********" //Poner el id de cliente que se quiere para conectarse al broker
+#define topic "****************" //Tema a suscribirse
 
 //**************************************
 //*********** OBJETOS ******************
@@ -100,12 +101,13 @@ void loop() {
       marca_tiempo++;
       //Contar los segundos
       if(marca_tiempo%5==0){
+        printf("segundos %i\n", segundos); // Imprimir los segundos
         segundos++; //Aumenta el contador de los segundos
-        printf("Segundos: %i\n", segundos);
       }
       if ((segundos%120)<30) { //Comprueba que son los primeros 30 segundos del ciclo
-        if(segundos%120==0 && marca_tiempo==0){  //Comprueba que se esta iniciando el ciclo
+        if(segundos%120==0 && marca_tiempo%5==0){  //Comprueba que se esta iniciando el ciclo
           veces++;  //Aumenta el contador de ciclos
+          printf("veces: %i\n", veces); //Imprimir las veces
         }
         correr_bits(segundos%20,marca_tiempo%5, 1); //Hace el corrimiento de bits en orden normal
       }else{
@@ -176,11 +178,7 @@ void asc_aditivo(int i) {
     }
 }
 void asc_exclusivo(int i) {
-  if(i==1){
-    leds=0b00001000;
-  }else{
-    leds>>=1; //Secuencia exclusiva ascendente
-  }
+  i==1?leds=0b00001000:leds>>=1;
 }
 void des_aditivo(int i) {
     if(i==0){
@@ -192,11 +190,7 @@ void des_aditivo(int i) {
     }
 }
 void des_exclusivo(int i) {
-    if(i==1){
-      leds=0b00000001;
-    }else{
-      leds<<=1; //Secuencia descendente exclusiva
-    }
+  i==1?leds=0b00000001:leds<<=1;
 }
 
 void conectar_wifi(){
